@@ -1,0 +1,99 @@
+defaults: &defaults
+    docker:
+      # You can easily switch containers and versions here.
+      # @see https://circleci.com/docs/2.0/circleci-images/#php
+      - image: juampynr/drupal8ci:latest
+    working_directory: ~/drupal8
+
+version: 2
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: composer-cache
+
+      - run:
+          name: Install PHP Extensions
+          command: sudo docker-php-ext-install gd
+      
+      - run:
+          name: Run composer install
+          command: composer install
+
+      - save_cache:
+          key: composer-cache
+          paths:
+            - $HOME/.composer/cache
+
+
+  deploy:
+    <<: *defaults
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: composer-cache
+
+      - run:
+          name: dependencies
+          command: |
+            mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" >> "$HOME/.ssh/config"
+            # Set up our default git config settings.
+            git config --global user.email "$GIT_EMAIL"
+            git config --global user.name "Circle CI"
+            git config --global core.fileMode false
+
+      - run:
+          name: Build assets
+          command: composer install --no-dev --optimize-autoloader
+
+      - run:
+          name: Prepare for hosting
+          command: |
+            sed -i '1,/^.*:: cut :*/d' .gitignore
+
+      - run:
+          name: Deploy to Live
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then 
+              cd ~
+              rsync -arvz -e "ssh -p ${SERVER_PORT}" drupal8/ $SERVER_USER@$SERVER_IP:$SERVER_HOME/$LIVE_PATH \
+                --exclude '.env' \
+                --exclude '.git' \
+                --exclude '.gitignore' \
+                --exclude 'sites/default/files' \
+                --delete
+            fi
+
+      - run:
+          name: Deploy to Staging
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "staging" ]; then 
+              cd ~
+              rsync -arvz -e "ssh -p ${SERVER_PORT}" drupal8/ $SERVER_USER@$SERVER_IP:$SERVER_HOME/$STAGING_PATH \
+                --exclude '.env' \
+                --exclude '.git' \
+                --exclude '.gitignore' \
+                --delete
+            fi
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+                - staging
+
+      - deploy:
+           filters:
+             branches:
+               only:
+                 - master
+                 - staging
