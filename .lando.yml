@@ -3,3 +3,8 @@ recipe: drupal8
 config:
   webroot: web
   php: 7.2
+
+services:
+  cache:
+    type: redis:3.2
+    portforward: 6380

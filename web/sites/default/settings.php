@@ -16,6 +16,27 @@ $databases['default']['default'] = [
 ];
 
 /**
+ * Redis Configuration.
+ */
+if (getenv('REDIS')) {
+  // Include the Redis services.yml file. Adjust the path if you installed to a contrib or other subdirectory.
+  $settings['container_yamls'][] = 'modules/redis/example.services.yml';
+
+  // Use PhpRedis PHP extension.
+  $settings['redis.connection']['interface'] = 'PhpRedis';
+  // These are dynamic variables handled by Pantheon.
+  $settings['redis.connection']['host']      = getenv(REDIS_HOST);
+  $settings['redis.connection']['port']      = getenv(REDIS_PORT);
+  $settings['redis.connection']['password']  = getenv(REDIS_PASSWORD);
+
+  $settings['cache']['default'] = 'cache.backend.redis'; // Use Redis as the default cache.
+  $settings['cache_prefix']['default'] = 'redis';
+
+  // Set Redis to not get the cache_form (no performance difference).
+  $settings['cache']['bins']['form']      = 'cache.backend.database';
+}
+
+/**
  * Config from https://www.drupal.org/node/2431247
  */
 $config_directories = array(
