@@ -1,0 +1,40 @@
+# Setup
+
+## Intall packages using npm.
+
+In the subtheme directory, run:
+'''
+npm install
+'''
+
+## Generate self-signed certificate for localhost
+Generating a cert for localhost will allow us to use browser-sync via https.
+
+First, change directory to where you want to generate the certificate for localhost. In my case, `~/.localhost-ssl` then execute this command:
+```
+openssl req -x509 -out localhost.crt -keyout localhost.key \
+  -newkey rsa:2048 -nodes -days 3650 -sha256 \
+  -subj '/CN=localhost' -extensions EXT -config <( \
+  printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
+```
+
+Add localhost.crt to keychain(OSX) and configure it to always trust.
+
+## Configure gulpfile.js
+Modify the code below using the appropriate value for your local development environment:
+```
+var config = {
+    sassPath: './scss',
+    npmPackageDir: './node_modules' 
+    site_url: 'https://example.com/',
+    roxy_port: 3030,
+    localhost_key: 'path-to-localhost.key',
+    localhost_cert: 'path-to-localhost.crt'
+};
+```
+
+## Run Gulp!
+
+```
+gulp
+```
