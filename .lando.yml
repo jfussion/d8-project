@@ -1,4 +1,4 @@
-name: light-tv
+name: appname
 recipe: drupal8
 config:
   webroot: web
@@ -7,4 +7,3 @@ config:
 services:
   cache:
     type: redis:3.2
-    portforward: 6380
