@@ -5,7 +5,8 @@
 /web/modules/contrib/
 /web/themes/contrib/
 /web/profiles/contrib/
-/web/libraries/
+/web/sites/development.services.yml
+# /web/libraries/
 
 # Ignore sensitive information
 /web/sites/*/settings.local.php
@@ -21,3 +22,44 @@
 
 # Ignore .env files as they are personal
 /.env
+
+# Ignore SimpleTest multi-site environment.
+sites/simpletest
+
+# Packages #
+############
+*.7z
+*.dmg
+*.gz
+*.bz2
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.tgz
+
+# Logs and databases #
+######################
+*.log
+*.sql
+
+# OS generated files #
+######################
+.DS_Store*
+ehthumbs.db
+Icon
+
+Thumbs.db
+._*
+
+# Vim generated files #
+######################
+*.un~
+
+# SASS #
+##########
+.sass-cache
+
+# Things in the core directory that Drupal 8 commits in the repository.
+!core/**/*.gz
