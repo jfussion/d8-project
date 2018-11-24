@@ -13,10 +13,11 @@
     ],
     "license": "MIT",
     "dependencies": {
+        "@fortawesome/fontawesome-free": "^5.3.1",
+        "angled-edges": "^2.0.0",
         "bootstrap": "^4.1.2",
         "breakpoint-sass": "^2.7.1",
         "css-reset-and-normalize": "^1.0.1",
-        "font-awesome": "^4.7.0",
         "jquery": "^3.3.1",
         "mdbootstrap": "^4.5.7",
         "popper.js": "^1.14.4",
