@@ -8,9 +8,9 @@ var autoprefixer = require('gulp-autoprefixer');
 
 var config = {
     sassPath: './scss',
-    npmPackageDir: './node_modules' 
+    npmPackageDir: './node_modules' ,
     site_url: 'https://lighttv.lndo.site/',
-    roxy_port: 3030,
+    proxy_port: 3030,
     localhost_key: '/Users/josephbonilla/.localhost-ssl/localhost.key',
     localhost_cert: '/Users/josephbonilla/.localhost-ssl/localhost.crt'
 };
@@ -28,11 +28,15 @@ gulp.task('sass', function() {
             './scss',
             config.npmPackageDir + '/css-reset-and-normalize/scss',
             config.npmPackageDir + '/bootstrap/scss',
-            config.npmPackageDir + '/font-awesome/scss'
+            config.npmPackageDir + '/@fortawesome/fontawesome-free/scss',
+            config.npmPackageDir + '/angled-edges'
           ]
         }))
+        .on('error', function (err) {
+            console.log(err.toString());
+            this.emit('end');
+        })
         .pipe(minifyCss())
-        .pipe(sass().on('error', sass.logError))
         .pipe(sourcemaps.write())
         .pipe(gulp.dest("css"))
         .pipe(browserSync.stream());
@@ -53,7 +57,7 @@ gulp.task('js', function() {
 
 // Copy font-awesome from node_modules into /fonts
 gulp.task('icons', function() { 
-    return gulp.src(config.npmPackageDir + '/font-awesome/fonts/**.*') 
+    return gulp.src(config.npmPackageDir + '/@fortawesome/fontawesome-free/webfonts/**.*') 
         .pipe(gulp.dest('./css/fonts/fontawesome')); 
 });
 
@@ -69,7 +73,7 @@ gulp.task('serve', ['sass'], function() {
     });
 
     gulp.watch(['node_modules/bootstrap/scss/bootstrap.scss', 'scss/**/*.scss', 'scss/*.scss'], ['sass']);
-    //    gulp.watch("src/*.html").on('change', browserSync.reload);
+        gulp.watch("src/*.html").on('change', browserSync.reload);
 });
 
 gulp.task('default', ['icons', 'js', 'serve']);
