@@ -1,41 +1,27 @@
-defaults: &defaults
-    docker:
-      # You can easily switch containers and versions here.
-      # @see https://circleci.com/docs/2.0/circleci-images/#php
-      - image: juampynr/drupal8ci:latest
-    working_directory: ~/drupal8
-
 version: 2
 jobs:
-  build:
-    <<: *defaults
+  build_deploy:
+    docker:
+      - image: circleci/php:7.2-node
+
+    working_directory: ~/drupal8
+
     steps:
       - checkout
 
-      - restore_cache:
-          key: composer-cache
+      - run: sudo docker-php-ext-install zip
+      - run: sudo composer self-update
+      - run: composer install --no-dev --optimize-autoloader
 
-      - run:
-          name: Install PHP Extensions
-          command: sudo docker-php-ext-install gd
+      - restore_cache:
+          keys:
+            - composer-v1-{{ checksum "composer.lock" }}
+            # fallback to using the latest cache if no exact match is found (See https://circleci.com/docs/2.0/caching/)
+            - composer-v1-
       
       - run:
-          name: Run composer install
-          command: composer install
-
-      - save_cache:
-          key: composer-cache
-          paths:
-            - $HOME/.composer/cache
-
-
-  deploy:
-    <<: *defaults
-    steps:
-      - checkout
-
-      - restore_cache:
-          key: composer-cache
+          name: build scss files js and fonts
+          command: ./.circleci/scripts/build-css
 
       - run:
           name: dependencies
@@ -45,10 +31,6 @@ jobs:
             git config --global user.email "$GIT_EMAIL"
             git config --global user.name "Circle CI"
             git config --global core.fileMode false
-
-      - run:
-          name: Build assets
-          command: composer install --no-dev --optimize-autoloader
 
       - run:
           name: Prepare for hosting
@@ -66,6 +48,7 @@ jobs:
                 --exclude '.git' \
                 --exclude '.gitignore' \
                 --exclude 'sites/default/files' \
+                --exclude 'scss' \
                 --delete
             fi
 
@@ -86,16 +69,9 @@ workflows:
   version: 2
   build_and_deploy:
     jobs:
-      ## - build:
-      ##     filters:
-      ##       branches:
-      ##         only:
-      ##           - master
-      ##           - staging
-
-      - deploy:
-           filters:
-             branches:
-               only:
-                 - master
-                 - staging
+      - build_deploy:
+          filters:
+            branches:
+              only:
+                - master
+                - staging

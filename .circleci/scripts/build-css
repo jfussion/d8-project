@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cd ~/drupal8/web/themes/custom/bs4_sub
+npm install
+gulp build --env prod
+
