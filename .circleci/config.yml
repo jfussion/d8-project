@@ -9,7 +9,7 @@ jobs:
     steps:
       - checkout
 
-      - run: 
+      - run:
           name: install PHP extentions
           command: |
             sudo docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr; \
@@ -23,7 +23,7 @@ jobs:
             - composer-v1-{{ checksum "composer.lock" }}
             # fallback to using the latest cache if no exact match is found (See https://circleci.com/docs/2.0/caching/)
             - composer-v1-
-      
+
       - run:
           name: build scss files js and fonts
           command: ./.circleci/scripts/build-css
@@ -45,7 +45,7 @@ jobs:
       - run:
           name: Deploy to Live
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then 
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
               cd ~
               rsync -arvz -e "ssh -p ${SERVER_PORT}" drupal8/ $SERVER_USER@$SERVER_IP:$SERVER_HOME/$LIVE_PATH \
                 --exclude '.env' \
@@ -60,7 +60,7 @@ jobs:
       - run:
           name: Deploy to Staging
           command: |
-            if [ "${CIRCLE_BRANCH}" == "staging" ]; then 
+            if [ "${CIRCLE_BRANCH}" == "staging" ]; then
               cd ~
               rsync -arvz -e "ssh -p ${SERVER_PORT}" drupal8/ $SERVER_USER@$SERVER_IP:$SERVER_HOME/$STAGING_PATH \
                 --exclude '.env' \
