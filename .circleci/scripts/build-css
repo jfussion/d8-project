@@ -2,5 +2,7 @@
 
 cd ~/drupal8/web/themes/custom/bs4_sub
 npm install
+npm install --global gulp@^3.9.1
+
 gulp build --env prod
 
