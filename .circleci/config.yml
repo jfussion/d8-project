@@ -12,6 +12,11 @@ jobs:
       - run:
           name: install PHP extentions
           command: |
+            sudo apt-get install -y --no-install-recommends \
+              libjpeg-dev \
+              libpng-dev \
+              libpq-dev \
+            ; \
             sudo docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr; \
             sudo docker-php-ext-install -j gd zip
 
