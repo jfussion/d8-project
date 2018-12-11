@@ -1,18 +1,28 @@
+require('dotenv').config()
+
 var gulp = require('gulp');
+var gulpif = require('gulp-if');
 var browserSync = require('browser-sync').create();
 var sass = require('gulp-sass');
 var minifyCss = require("gulp-clean-css");
 var sourcemaps = require("gulp-sourcemaps");
 var sassGlob = require("gulp-sass-glob")
 var autoprefixer = require('gulp-autoprefixer');
+var minimist = require('minimist');
+
+var knownOptions = {
+  string: 'env',
+  default: { env: 'dev'}
+};
 
 var config = {
+    env:  minimist(process.argv.slice(2), knownOptions).env,
     sassPath: './scss',
     npmPackageDir: './node_modules' ,
-    site_url: 'https://lighttv.lndo.site/',
+    site_url: process.env.SITE_URL,
     proxy_port: 3030,
-    localhost_key: '/Users/josephbonilla/.localhost-ssl/localhost.key',
-    localhost_cert: '/Users/josephbonilla/.localhost-ssl/localhost.crt'
+    localhost_key: process.env.LOCALHOST_KEY,
+    localhost_cert: process.env.LOCALHOST_CERT
 };
 
 
@@ -20,7 +30,7 @@ var config = {
 gulp.task('sass', function() {
     return gulp.src(config.sassPath + '/style.scss')
         .pipe(sassGlob())
-        .pipe(sourcemaps.init())
+        .pipe(gulpif(config.env === 'dev', sourcemaps.init()))
         .pipe(autoprefixer())
         .pipe(sass({
           outputStyle: 'compressed',
@@ -37,9 +47,9 @@ gulp.task('sass', function() {
             this.emit('end');
         })
         .pipe(minifyCss())
-        .pipe(sourcemaps.write())
+        .pipe(gulpif(config.env === 'dev', sourcemaps.write()))
         .pipe(gulp.dest("css"))
-        .pipe(browserSync.stream());
+        .pipe(gulpif(config.env === 'dev', browserSync.stream()));
 });
 
 // Move the javascript files into our js folder
@@ -51,7 +61,7 @@ gulp.task('js', function() {
         'node_modules/slideout/dist/slideout.min.js',
         ])
         .pipe(gulp.dest("js"))
-        .pipe(browserSync.stream());
+        .pipe(gulpif(config.env === 'dev', browserSync.stream()));
 });
 
 
@@ -77,3 +87,5 @@ gulp.task('serve', ['sass'], function() {
 });
 
 gulp.task('default', ['icons', 'js', 'serve']);
+
+gulp.task('build', ['icons', 'js', 'sass']);
