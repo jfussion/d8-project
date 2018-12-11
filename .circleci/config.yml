@@ -18,7 +18,7 @@ jobs:
               libpq-dev \
             ; \
             sudo docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr; \
-            sudo docker-php-ext-install -j gd zip
+            sudo docker-php-ext-install -j "$(nproc)" gd zip
 
       - run: sudo composer self-update
       - run: composer install --no-dev --optimize-autoloader
