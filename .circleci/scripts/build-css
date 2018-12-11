@@ -4,3 +4,6 @@ cd ~/drupal8/web/themes/custom/bs4_sub
 npm install
 
 ./node_modules/gulp/bin/gulp.js build --env prod
+
+# Delete node_modules directory.
+rm -rf node_modules
