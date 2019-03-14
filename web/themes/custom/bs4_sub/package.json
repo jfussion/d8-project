@@ -15,7 +15,7 @@
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.3.1",
         "angled-edges": "^2.0.0",
-        "bootstrap": "^4.1.2",
+        "bootstrap": "^4.3.1",
         "breakpoint-sass": "^2.7.1",
         "css-reset-and-normalize": "^1.0.1",
         "jquery": "^3.3.1",
