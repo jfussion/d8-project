@@ -54,6 +54,7 @@ jobs:
               cd ~
               rsync -arvz -e "ssh -p ${SERVER_PORT}" drupal8/ $SERVER_USER@$SERVER_IP:$SERVER_HOME/$LIVE_PATH \
                 --exclude '.env' \
+                --exclude 'php.ini' \
                 --exclude '.user.ini' \
                 --exclude '.git' \
                 --exclude '.gitignore' \
@@ -71,6 +72,7 @@ jobs:
                 --exclude '.env' \
                 --exclude '.user.ini' \
                 --exclude '.git' \
+                --exclude 'php.ini' \
                 --exclude '.gitignore' \
                 --delete
             fi
