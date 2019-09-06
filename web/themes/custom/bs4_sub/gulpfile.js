@@ -72,7 +72,7 @@ gulp.task('icons', function() { 
 });
 
 // Static Server + watching scss/html files
-gulp.task('serve', ['sass'], function() {
+gulp.task('serve', gulp.series('sass', function() {
     browserSync.init({
         proxy: config.site_url,
         port: config.proxy_port,
@@ -82,10 +82,10 @@ gulp.task('serve', ['sass'], function() {
         }
     });
 
-    gulp.watch(['node_modules/bootstrap/scss/bootstrap.scss', 'scss/**/*.scss', 'scss/*.scss'], ['sass']);
-        gulp.watch("src/*.html").on('change', browserSync.reload);
-});
+    gulp.watch(['node_modules/bootstrap/scss/bootstrap.scss', 'scss/**/*.scss', 'scss/*.scss'], gulp.series('sass'));
+    gulp.watch("src/*.html").on('change', browserSync.reload);
+}));
 
-gulp.task('default', ['icons', 'js', 'serve']);
+gulp.task('default', gulp.series('icons', 'js', 'serve'));
 
-gulp.task('build', ['icons', 'js', 'sass']);
+gulp.task('build', gulp.series('icons', 'js', 'sass'));
